@@ -29,12 +29,12 @@ def detail(request, pk):
 
 # 显示归档页面，函数的参数列表中使用属性要用双下划线(django要求)
 def archives(request, year, month):
-    post_list = Post.objects.filter(created_time__year=year, created_time__month=month).order_by('-created_time')
+    post_list = Post.objects.filter(created_time__year=year, created_time__month=month)
     return render(request, 'mainsite/index.html', context={'post_list': post_list})
 
 
 # 显示分类页面
 def category(request, pk):
     cate = get_object_or_404(Category, pk=pk)
-    post_list = Post.objects.filter(category=cate).order_by('-created_time')
+    post_list = Post.objects.filter(category=cate)
     return render(request, 'mainsite/index.html', context={'post_list': post_list})
