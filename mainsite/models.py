@@ -34,5 +34,6 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    # 待解释：获取post的url， pk是主键
     def get_absolute_url(self):
         return reverse('mainsite:detail', kwargs={'pk': self.pk})
