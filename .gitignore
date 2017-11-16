@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 # personal configs
 configs.json
+*.sqlite3
 __pycache__/
 *.py[cod]
 *$py.class
