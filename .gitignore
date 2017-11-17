@@ -1,11 +1,12 @@
 # Byte-compiled / optimized / DLL files
-# personal configs
-configs.json
-*.sqlite3
 __pycache__/
 *.py[cod]
 *$py.class
 
+# personal configs
+configs.json
+*.sqlite3
+fabfile.py
 # C extensions
 *.so
 
