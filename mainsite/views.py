@@ -1,11 +1,16 @@
 import markdown
+# 用于美化点击目录中标题时的url形式
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 
 from django.shortcuts import render, get_object_or_404
 
-from .models import Post, Category
+from .models import Post, Category, Tag
 from comments.forms import CommentForm
 # 改成类视图
 from django.views.generic import ListView, DetailView
+from django.db.models import Q
+
 
 # 主页视图
 # ListView本身已经传递了分类信息
@@ -149,15 +154,18 @@ class PostDetailView(DetailView):
         return response
     
     # get_object和get_context_data在父类get方法的调用中都会被调用
-    # 函数在对post的body进行渲染
+    # 函数再对post的body进行渲染
     def get_object(self, queryset=None):
         post = super(PostDetailView, self).get_object(queryset=None)
-        post.body = markdown.markdown(post.body,
-                                      extensions=[
-                                          'markdown.extensions.extra',
-                                          'markdown.extensions.codehilite',
-                                          'markdown.extensions.toc',
-                                      ])
+        md = markdown.Markdown(extensions=[
+            'markdown.extensions.extra',
+            'markdown.extensions.codehilite',
+            TocExtension(slugify=slugify),
+        ])
+
+        post.body = md.convert(post.body)
+        # post可以动态添加toc属性，在model里没有
+        post.toc = md.toc
         return post
 
     def get_context_data(self, **kwargs):
@@ -169,27 +177,6 @@ class PostDetailView(DetailView):
             'comment_list': comment_list
         })
         return context
-
-
-'''
-# 文章详情页面,使用markdown支持语法高亮
-def detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    # 增加阅读量
-    post.increase_views()
-
-    post.body = markdown.markdown(post.body, extensions=[
-                                  'markdown.extensions.extra',
-                                  'markdown.extensions.codehilite',
-                                  'markdown.extensions.toc'])
-    form = CommentForm()
-    comment_list = post.comment_set.all()
-    context = {'post': post,
-               'form': form,
-               'comment_list': comment_list
-               }
-    return render(request, 'mainsite/detail.html', context=context)
-'''
 
 
 # 显示归档页面，函数的参数列表中使用属性要用双下划线(django要求)
@@ -216,3 +203,27 @@ class CategoryView(ListView):
         cate = get_object_or_404(Category, pk=self.kwargs.get('pk'))
         return super(CategoryView, self).get_queryset().filter(category=cate)
 
+
+# 标签对应的文章页面
+class TagView(ListView):
+    model = Post
+    template_name = 'mainsite/index.html'
+    context_object_name = 'post_list'
+
+    def get_queryset(self):
+        tag = get_object_or_404(Tag, pk=self.kwargs.get('pk'))
+        return super(TagView, self).get_queryset().filter(tags=tag)
+
+
+def search(request):
+    # 这里的'q'是input的name
+    q = request.GET.get('q')
+    error_msg = ''
+
+    if not q:
+        error_msg = "请输入关键词"
+        return render(request, 'mainsite/index.html', {'error_msg': error_msg})
+
+    post_list = Post.objects.filter(Q(title__icontains=q) | Q(body__icontains=q))
+    return render(request, 'mainsite/index.html', {'error_msg': error_msg,
+                                                   'post_list': post_list})

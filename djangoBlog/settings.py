@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mainsite',
     'comments',
+    'haystack',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+# haystack configs
+HAYSTACK_CONNECTIONS = {
+    'default':{
+        # haystack使用的搜索引擎
+        'ENGINE': 'mainsite.whoosh_cn_backend.WhooshEngine',
+        # 索引文件需要存放的位置
+        'PATH': os.path.join(BASE_DIR, 'whoose_index'),
+    },
+}
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+# 更新索引的时间：每次有文章更新时就更新索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
