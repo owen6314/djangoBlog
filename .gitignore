@@ -7,6 +7,7 @@ __pycache__/
 configs.json
 *.sqlite3
 fabfile.py
+migrations/
 # C extensions
 *.so
 
