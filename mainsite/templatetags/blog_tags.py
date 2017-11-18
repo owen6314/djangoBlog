@@ -1,5 +1,6 @@
 from django import template
 from ..models import Post, Category
+from django.db.models.aggregates import Count
 
 
 register = template.Library()
@@ -20,4 +21,5 @@ def archives():
 # 分类模板标签
 @register.simple_tag
 def get_categories():
-    return Category.objects.all()
+	# annotate除了all的功能外，还为其增加了num_posts属性
+    return Category.objects.annotate(num_posts=Count('post')).filter(num_posts__gt=0)
