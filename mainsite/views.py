@@ -21,7 +21,7 @@ class IndexView(ListView):
     # post_list 这个变量名会被传给模板
     context_object_name = 'post_list'
     # 值代表每页有几篇文章
-    paginate_by = 1
+    paginate_by = 3
     
     def get_context_data(self, **kwargs):
         # 在类视图中，需要传递的模版变量字典是通过get_context_data获得的
