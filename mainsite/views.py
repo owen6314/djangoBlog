@@ -9,6 +9,7 @@ from .models import Post, Category, Tag
 from comments.forms import CommentForm
 # 改成类视图
 from django.views.generic import ListView, DetailView
+from django.views.generic import TemplateView
 from django.db.models import Q
 
 
@@ -214,6 +215,13 @@ class TagView(ListView):
         tag = get_object_or_404(Tag, pk=self.kwargs.get('pk'))
         return super(TagView, self).get_queryset().filter(tags=tag)
 
+# cv对应页面，暂时为空
+class CvView(TemplateView):
+    template_name = 'mainsite/cv.html'
+
+# about对应页面
+class AboutView(TemplateView):
+    template_name = 'mainsite/about.html'
 
 def search(request):
     # 这里的'q'是input的name
