@@ -1,4 +1,2 @@
 # djangoBlog
-My official blog(with temporarily no articles).
-
-I will post when I'm ready.
+A blog built using django following [this tutorial](https://www.zmrenwu.com/courses/django-blog-tutorial/).
